@@ -52,6 +52,7 @@ const formatTime = (value: string) => {
   <div class="window">
     <div
       v-if="page === 'record'"
+      key="record-title"
       class="title-bar"
     >
       <span>💡 Idea Bubble</span>
@@ -60,12 +61,13 @@ const formatTime = (value: string) => {
         aria-label="历史想法"
         @click="showHistory"
       >
-        📚
+        <span>📚</span>
       </button>
     </div>
 
     <div
       v-else
+      key="history-title"
       class="title-bar"
     >
       <button
@@ -80,6 +82,7 @@ const formatTime = (value: string) => {
 
     <div
       v-if="page === 'record'"
+      key="record-content"
       class="content"
     >
       <div
@@ -101,6 +104,7 @@ const formatTime = (value: string) => {
 
     <div
       v-else
+      key="history-content"
       class="history-content"
     >
       <p
@@ -133,104 +137,235 @@ const formatTime = (value: string) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: white;
+
+  background: rgba(255, 255, 255, 0.18);
+
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+
+  border-radius: 24px;
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.15);
+
+  overflow: hidden;
 }
 
+
+/* 顶部栏：不再单独形成一个玻璃块 */
 .title-bar {
   height: 40px;
+
   display: flex;
   align-items: center;
+
   padding-left: 14px;
-  background: #f5f5f5;
+
+  background: transparent;
+
+
   font-weight: 600;
+
   -webkit-app-region: drag;
 }
+
 
 .title-bar span {
   flex: 1;
 }
 
+
+/* 记录页面 */
 .content {
   flex: 1;
+
   display: flex;
   flex-direction: column;
+
   padding: 15px;
+
   gap: 12px;
 }
+
 
 .hint {
   margin: 0;
 }
 
+
+/* 输入框 */
 textarea {
   flex: 1;
+
   resize: none;
-  border: 1px solid #cccccc;
-  padding: 10px;
+
+  background: rgba(255, 255, 255, 0.12);
+
+  border: none;
+
+  border-radius: 12px;
+
+  padding: 12px;
+
   font-size: 14px;
+
+  color: #333;
+
+  outline: none;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.15);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
+
+textarea::placeholder {
+  color: rgba(0,0,0,0.45);
+}
+
+
+/* 主按钮 */
 button {
-  align-self: flex-end;
   padding: 10px 18px;
+
   border: 0;
-  background: #1677ff;
+
+  border-radius: 12px;
+
+  background: rgba(41, 106, 247, 0.55);
+
   color: white;
+
   cursor: pointer;
+
+  backdrop-filter: blur(10px);
+
+  transition: transform .15s ease;
 }
 
+
+button:hover {
+  transform: scale(1.05);
+}
+
+
+/* 图标按钮 */
 .icon-button,
 .back-button {
   -webkit-app-region: no-drag;
 }
 
+
 .icon-button {
-  align-self: stretch;
-  padding: 0 14px;
-  background: #f5f5f5;
+  align-self: center;
+
+  width: 32px;
+  height: 32px;
+
+  margin-right: 8px;
+
+  padding: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: transparent;
+
   color: inherit;
-  font-size: 16px;
+
+  font-size: 15px;
+
+  transition: 
+    background .2s ease,
+    transform .15s ease;
 }
+
+.icon-button:hover {
+  background: rgba(255,255,255,0.25);
+
+  transform: scale(1.05);
+}
+
 
 .back-button {
   align-self: stretch;
+
   padding: 0 10px 0 0;
-  background: #f5f5f5;
+
+  background: transparent;
+
   color: inherit;
+
   font-size: 18px;
 }
 
+
+/* 保存提示 */
 .saved-tip {
   text-align: center;
+
   color: #2e7d32;
+
   font-weight: bold;
 }
 
+
+/* 历史页面 */
 .history-content {
-  flex: 1;
-  min-height: 0;
-  padding: 15px;
+  flex:1;
+
+  min-height:0;
+
+  display:flex;
+
+  flex-direction:column;
+
+  padding:15px;
+
+  overflow:hidden;
+
+  background: rgba(111, 181, 255, 0.92);
+
+  color:#333;
 }
+
 
 .history-list {
   height: 100%;
+
   overflow-y: auto;
 }
 
+
+/* 历史记录条目 */
 .idea-item {
-  padding: 10px 0;
-  border-bottom: 1px solid #cccccc;
+  padding: 12px 0;
+
+  border-bottom: 1px solid rgba(255,255,255,0.18);
 }
+
 
 .idea-text {
   white-space: pre-wrap;
 }
 
+
 .idea-time {
   margin-top: 6px;
-  color: #666666;
+
+  color: rgba(0,0,0,0.45);
+
   font-size: 12px;
 }
+
 
 .empty-tip {
   margin: 0;

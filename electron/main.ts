@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
-import { saveIdeaToFile } from './storage'
+import { readIdeas, saveIdeaToFile } from './storage'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
@@ -77,5 +77,9 @@ app.whenReady().then(() => {
 
   ipcMain.handle('save-idea', (_event, text: string) => {
     return saveIdeaToFile(text)
+  })
+
+  ipcMain.handle('read-ideas', () => {
+    return readIdeas()
   })
 })

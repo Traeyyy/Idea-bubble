@@ -1,78 +1,67 @@
-import { app, BrowserWindow, ipcMain } from "electron";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-function saveIdeaToFile(text) {
-  const dataPath = app.getPath("userData");
-  const filePath = path.join(dataPath, "ideas.json");
-  let ideas = [];
-  if (fs.existsSync(filePath)) {
-    const content = fs.readFileSync(filePath, "utf-8");
-    const parsed = JSON.parse(content);
-    if (!Array.isArray(parsed)) {
-      throw new Error("ideas.json must contain an array");
-    }
-    ideas = parsed;
-  }
-  ideas.push({
-    text,
-    createdAt: (/* @__PURE__ */ new Date()).toISOString()
-  });
-  fs.writeFileSync(filePath, JSON.stringify(ideas, null, 2), "utf-8");
-  console.log("保存成功:", filePath);
-  return true;
+import { app as a, BrowserWindow as p, ipcMain as f } from "electron";
+import i from "node:fs";
+import e from "node:path";
+import { fileURLToPath as h } from "node:url";
+function P() {
+  const r = e.join(a.getPath("userData"), "ideas.json");
+  if (!i.existsSync(r))
+    return [];
+  const o = i.readFileSync(r, "utf-8"), t = JSON.parse(o);
+  if (!Array.isArray(t))
+    throw new Error("ideas.json must contain an array");
+  return t.sort(
+    (s, l) => new Date(l.createdAt).getTime() - new Date(s.createdAt).getTime()
+  );
 }
-const __dirname$1 = path.dirname(fileURLToPath(import.meta.url));
-process.env.APP_ROOT = path.join(__dirname$1, "..");
-const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
-const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
-const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
-let win;
-function createWindow() {
-  win = new BrowserWindow({
+function R(r) {
+  const o = a.getPath("userData"), t = e.join(o, "ideas.json");
+  let s = [];
+  if (i.existsSync(t)) {
+    const l = i.readFileSync(t, "utf-8"), d = JSON.parse(l);
+    if (!Array.isArray(d))
+      throw new Error("ideas.json must contain an array");
+    s = d;
+  }
+  return s.push({
+    text: r,
+    createdAt: (/* @__PURE__ */ new Date()).toISOString()
+  }), i.writeFileSync(t, JSON.stringify(s, null, 2), "utf-8"), console.log("保存成功:", t), !0;
+}
+const m = e.dirname(h(import.meta.url));
+process.env.APP_ROOT = e.join(m, "..");
+const c = process.env.VITE_DEV_SERVER_URL, T = e.join(process.env.APP_ROOT, "dist-electron"), u = e.join(process.env.APP_ROOT, "dist");
+process.env.VITE_PUBLIC = c ? e.join(process.env.APP_ROOT, "public") : u;
+let n;
+function w() {
+  n = new p({
     width: 320,
     height: 240,
     x: 20,
     y: 20,
-    frame: false,
-    alwaysOnTop: true,
-    resizable: false,
-    maximizable: false,
-    minimizable: false,
-    autoHideMenuBar: true,
+    frame: !1,
+    alwaysOnTop: !0,
+    resizable: !1,
+    maximizable: !1,
+    minimizable: !1,
+    autoHideMenuBar: !0,
     webPreferences: {
-      preload: path.join(__dirname$1, "preload.mjs")
+      preload: e.join(m, "preload.mjs")
     }
-  });
-  win.webContents.on("did-finish-load", () => {
-    win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
-  });
-  if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL);
-  } else {
-    win.loadFile(path.join(RENDERER_DIST, "index.html"));
-  }
+  }), n.webContents.on("did-finish-load", () => {
+    n == null || n.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
+  }), c ? n.loadURL(c) : n.loadFile(e.join(u, "index.html"));
 }
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-    win = null;
-  }
+a.on("window-all-closed", () => {
+  process.platform !== "darwin" && (a.quit(), n = null);
 });
-app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+a.on("activate", () => {
+  p.getAllWindows().length === 0 && w();
 });
-app.whenReady().then(() => {
-  createWindow();
-  ipcMain.handle("save-idea", (_event, text) => {
-    return saveIdeaToFile(text);
-  });
+a.whenReady().then(() => {
+  w(), f.handle("save-idea", (r, o) => R(o)), f.handle("read-ideas", () => P());
 });
 export {
-  MAIN_DIST,
-  RENDERER_DIST,
-  VITE_DEV_SERVER_URL
+  T as MAIN_DIST,
+  u as RENDERER_DIST,
+  c as VITE_DEV_SERVER_URL
 };

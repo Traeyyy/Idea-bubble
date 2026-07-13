@@ -7,4 +7,8 @@ contextBridge.exposeInMainWorld("ideaBubble", {
     return ipcRenderer.invoke("save-idea", text);
   },
 
+  readIdeas() {
+    return ipcRenderer.invoke("read-ideas");
+  },
+
 });

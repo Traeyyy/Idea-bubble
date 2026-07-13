@@ -7,6 +7,25 @@ interface Idea {
   createdAt: string
 }
 
+export function readIdeas(): Idea[] {
+  const filePath = path.join(app.getPath('userData'), 'ideas.json')
+
+  if (!fs.existsSync(filePath)) {
+    return []
+  }
+
+  const content = fs.readFileSync(filePath, 'utf-8')
+  const parsed: unknown = JSON.parse(content)
+
+  if (!Array.isArray(parsed)) {
+    throw new Error('ideas.json must contain an array')
+  }
+
+  return (parsed as Idea[]).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )
+}
+
 export function saveIdeaToFile(text: string) {
   const dataPath = app.getPath('userData')
   const filePath = path.join(dataPath, 'ideas.json')

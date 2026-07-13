@@ -1,8 +1,1 @@
-"use strict";
-const electron = require("electron");
-console.log("✅ preload loaded");
-electron.contextBridge.exposeInMainWorld("ideaBubble", {
-  saveIdea(text) {
-    return electron.ipcRenderer.invoke("save-idea", text);
-  }
-});
+"use strict";const e=require("electron");console.log("✅ preload loaded");e.contextBridge.exposeInMainWorld("ideaBubble",{saveIdea(r){return e.ipcRenderer.invoke("save-idea",r)},readIdeas(){return e.ipcRenderer.invoke("read-ideas")}});

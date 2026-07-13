@@ -22,9 +22,15 @@ declare namespace NodeJS {
 }
 
 // Used in Renderer process, expose in `preload.ts`
+interface Idea {
+  text: string
+  createdAt: string
+}
+
 interface Window {
   ipcRenderer: import('electron').IpcRenderer
   ideaBubble: {
     saveIdea: (text: string) => Promise<boolean>
+    readIdeas: () => Promise<Idea[]>
   }
 }

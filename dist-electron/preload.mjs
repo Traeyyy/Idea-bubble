@@ -1,1 +1,0 @@
-"use strict";const e=require("electron");console.log("✅ preload loaded");e.contextBridge.exposeInMainWorld("ideaBubble",{saveIdea(r){return e.ipcRenderer.invoke("save-idea",r)},readIdeas(){return e.ipcRenderer.invoke("read-ideas")}});

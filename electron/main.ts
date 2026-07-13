@@ -1,9 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
-import { createRequire } from 'node:module'
+import { saveIdeaToFile } from './storage'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // The built directory structure
@@ -31,29 +30,25 @@ let win: BrowserWindow | null
 function createWindow() {
   win = new BrowserWindow({
     width: 320,
-    height: 180,
-  
+    height: 240,
     x: 20,
     y: 20,
-  
     frame: false,
     alwaysOnTop: true,
-  
     resizable: false,
     maximizable: false,
     minimizable: false,
-  
     autoHideMenuBar: true,
-  
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     },
   })
-  
+
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())
   })
+
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
@@ -80,13 +75,7 @@ app.whenReady().then(() => {
 
   createWindow()
 
-  ipcMain.handle("save-idea", async (_event, text: string) => {
-
-    console.log("收到保存请求：")
-    console.log(text)
-
-    return true
-
+  ipcMain.handle('save-idea', (_event, text: string) => {
+    return saveIdeaToFile(text)
   })
-
 })

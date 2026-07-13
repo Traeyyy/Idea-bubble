@@ -2,6 +2,29 @@
 import { ref } from 'vue'
 
 const idea = ref('')
+const saved = ref(false)
+
+const saveIdea = async () => {
+  console.log("按钮被点击了")
+
+  if (!idea.value.trim()) {
+    return
+  }
+
+  const result = await window.ideaBubble.saveIdea(idea.value)
+
+  console.log("save result:", result)
+
+  if (result) {
+    saved.value = true
+
+    setTimeout(() => {
+      saved.value = false
+    }, 1500)
+  }
+
+  idea.value = ''
+}
 </script>
 
 <template>
@@ -13,6 +36,13 @@ const idea = ref('')
 
     <div class="content">
 
+      <div
+        v-if="saved"
+        class="saved-tip"
+      >
+        ✓ 已保存
+      </div>
+
       <p class="hint">
         今天有什么想法？
       </p>
@@ -22,7 +52,7 @@ const idea = ref('')
         placeholder="随便写下任何念头..."
       ></textarea>
 
-      <button>
+      <button @click="saveIdea">
         记录想法
       </button>
 
@@ -31,88 +61,66 @@ const idea = ref('')
   </div>
 </template>
 
+
 <style scoped>
 
-.window{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  background:white;
+.window {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
 }
 
-.title-bar{
-  height:40px;
 
-  display:flex;
-  align-items:center;
-
-  padding-left:14px;
-
-  background:#f5f5f5;
-
-  font-weight:bold;
-
-  border-bottom:1px solid #ddd;
-
+.title-bar {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding-left: 14px;
+  background: #f5f5f5;
+  font-weight: 600;
   -webkit-app-region:drag;
 }
 
-.content{
-  flex:1;
 
-  display:flex;
-  flex-direction:column;
-
-  padding:15px;
-
-  gap:12px;
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  gap: 12px;
 }
 
-.hint{
-  margin:0;
-  color:#666;
+
+.hint {
+  margin: 0;
 }
 
-textarea{
 
-  flex:1;
-
-  resize:none;
-
-  border-radius:8px;
-
-  border:1px solid #ccc;
-
-  padding:10px;
-
-  font-size:14px;
-
-  outline:none;
-
+textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid #cccccc;
+  padding: 10px;
+  font-size: 14px;
 }
 
-button{
 
-  align-self:flex-end;
-
-  padding:8px 16px;
-
-  border:none;
-
-  border-radius:8px;
-
-  background:#4f8cff;
-
-  color:white;
-
-  cursor:pointer;
-
+button {
+  align-self: flex-end;
+  padding: 10px 18px;
+  border: 0;
+  background: #1677ff;
+  color: white;
+  cursor: pointer;
 }
 
-button:hover{
 
-  background:#3b74db;
-
+.saved-tip {
+  text-align: center;
+  color: #2e7d32;
+  font-weight: bold;
 }
 
 </style>

@@ -1,8 +1,27 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
+import fs from "node:fs";
 import path from "node:path";
-createRequire(import.meta.url);
+import { fileURLToPath } from "node:url";
+function saveIdeaToFile(text) {
+  const dataPath = app.getPath("userData");
+  const filePath = path.join(dataPath, "ideas.json");
+  let ideas = [];
+  if (fs.existsSync(filePath)) {
+    const content = fs.readFileSync(filePath, "utf-8");
+    const parsed = JSON.parse(content);
+    if (!Array.isArray(parsed)) {
+      throw new Error("ideas.json must contain an array");
+    }
+    ideas = parsed;
+  }
+  ideas.push({
+    text,
+    createdAt: (/* @__PURE__ */ new Date()).toISOString()
+  });
+  fs.writeFileSync(filePath, JSON.stringify(ideas, null, 2), "utf-8");
+  console.log("保存成功:", filePath);
+  return true;
+}
 const __dirname$1 = path.dirname(fileURLToPath(import.meta.url));
 process.env.APP_ROOT = path.join(__dirname$1, "..");
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
@@ -13,7 +32,7 @@ let win;
 function createWindow() {
   win = new BrowserWindow({
     width: 320,
-    height: 180,
+    height: 240,
     x: 20,
     y: 20,
     frame: false,
@@ -48,10 +67,8 @@ app.on("activate", () => {
 });
 app.whenReady().then(() => {
   createWindow();
-  ipcMain.handle("save-idea", async (_event, text) => {
-    console.log("收到保存请求：");
-    console.log(text);
-    return true;
+  ipcMain.handle("save-idea", (_event, text) => {
+    return saveIdeaToFile(text);
   });
 });
 export {
